@@ -33,9 +33,9 @@ Para garantizar la seguridad, la estabilidad del material educativo y evitar có
 
 Si encuentras un fallo o tienes una sugerencia visual/técnica pero no sabes cómo programarla, por favor abre un **Issue** en la pestaña correspondiente explicando el problema.
 
-Descargo de Responsabilidad Legal y Ética:
-Este proyecto tiene fines estrictamente educativos y académicos. Los simuladores aquí presentados no interactúan de forma automatizada ni extraen datos (scraping) de las plataformas reales de Google o Shodan. Tampoco contienen ni distribuyen el código fuente original del software Nmap. Los nombres "Google", "Shodan" y "Nmap" son marcas registradas de sus respectivos propietarios y este proyecto no está afiliado, respaldado ni patrocinado por ellos.
-
+---
+> ⚠️ **Descargo de Responsabilidad Legal y Ética:**
+*Este proyecto tiene fines estrictamente educativos y académicos. Los simuladores aquí presentados no interactúan de forma automatizada ni extraen datos (scraping) de las plataformas reales de Google o Shodan. Tampoco contienen ni distribuyen el código fuente original del software Nmap. Los nombres "Google", "Shodan" y "Nmap" son marcas registradas de sus respectivos propietarios y este proyecto no está afiliado, respaldado ni patrocinado por ellos.*
 
 ---
 *Desarrollado y mantenido por Cybernaq para el fortalecimiento de la educación técnica en ciberseguridad.*
