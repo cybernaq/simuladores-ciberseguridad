@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Virtual Nmap v4.0 (Completo)</title>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=Zm_6g6XMDlpsVgSoxPJ8zvO5EhbaESFA72WCkdSU_4Lt_lNGLNga2Per0J78jiq349V6tOgWTdauFAAAnvDyhiZuC0nurVbiPXTWewoeRgnnuB5ntDDgrvawsdA43kVTYtQjqs5_bp-mHbhcLYTe7Ei6EFMUAhc9uP1dGptumgzjfsuhSs7YpFUlO5u78Rx3hXjXaBN5mv_V2UGoK8osPNhlq3vhyFQjwIYFPOWbx_ALiwDqMt3TFQcZ68AtwnB1um-7QWdVlUxQ3NflqsLONiVq8wFHm5UmL2feoDAyvyir2LDQtXw57ZxsBhmrY1LWwAFkDXaIN_KFN1uRq6h4Vg" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jb250cmlidXRpb24udXNlcmNvbnRlbnQuZ29vZ2xlLmNvbS9kb3dubG9hZD9jPUNneGlZWEprWDNOMGIzSmhaMlVTVEJJSmRHVnRjRjlrWVhSaEdqOEtNRFptTnpka1pERmpNemd6TkdJNU5XSXdNREEyTkdaaFl6UXlOVFUwTkRCaU1EUmlPRFJpWlRZNVl6QmxOalpsTlJJTEVnY1E1ZDN6M3VRWEdBRSZmaWxlbmFtZT1TaW11bGFkb3JfTm1hcF9WNF9Db21wbGV0by5odG1sJm9waT0xMDMxMzUwNTA"/><style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --terminal-bg: #000000;
+            --text-primary: #f8fafc;
+            --accent: #38bdf8;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            color: var(--accent);
+            margin-top: 0;
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .panel-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-group h3 {
+            font-size: 0.85rem;
+            margin: 0 0 12px 0;
+            color: var(--accent);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            cursor: pointer;
+            color: #cbd5e1;
+            transition: color 0.2s;
+        }
+
+        label:hover {
+            color: var(--text-primary);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: var(--accent);
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            background: #0f172a;
+            color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .terminal-header {
+            background: #334155;
+            padding: 6px 15px;
+            border-radius: 8px 8px 0 0;
+            font-family: monospace;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            color: #cbd5e1;
+        }
+
+        #console {
+            background: var(--terminal-bg);
+            color: #d1d5db;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            height: 380px;
+            overflow-y: auto;
+            border-radius: 0 0 8px 8px;
+            white-space: pre-wrap;
+            border: 1px solid var(--border-color);
+            line-height: 1.4;
+        }
+
+        .btn-scan {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 20px 0;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: #0f172a;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-scan:hover {
+            background: #7dd3fc;
+        }
+
+        .analysis-box {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .analysis-title {
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Syntax Highlighting in Console */
+        .cmd { color: var(--accent); font-weight: bold; }
+        .reason-col { color: var(--success); }
+        .trace { color: #8b5cf6; }
+        .vuln { color: var(--danger); font-weight: bold; }
+        .info { color: var(--warning); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Laboratorio Virtual Nmap v4.0 (Completo: Reconocimiento y Evasión)</h1>
+    
+    <div class="panel-controls">
+        <!-- Panel 1: Objetivo -->
+        <div class="control-group">
+            <h3>1. Objetivo (Target)</h3>
+            <select id="target">
+                <option value="metasploitable">Metasploitable 2 (Linux)</option>
+                <option value="windows">Windows 11 (Firewall Activo)</option>
+            </select>
+        </div>
+
+        <!-- Panel 2: Escaneo Básico y Flags -->
+        <div class="control-group">
+            <h3>2. Escaneo (Flags Básicos)</h3>
+            <label><input type="checkbox" class="flag" value="-sS" checked> -sS (TCP Stealth Scan)</label>
+            <label><input type="checkbox" class="flag" value="-sV"> -sV (Version Detection)</label>
+            <label><input type="checkbox" class="flag" value="-O"> -O (OS Fingerprinting)</label>
+            <label><input type="checkbox" class="flag" value="--top-ports 50"> --top-ports 50 (Rápido)</label>
+        </div>
+
+        <!-- Panel 3: Agresividad -->
+        <div class="control-group">
+            <h3>3. Agresividad / Otros</h3>
+            <label><input type="checkbox" class="flag" value="-A"> -A (Aggressive: OS, Serv, Scripts)</label>
+            <label><input type="checkbox" class="flag" value="-Pn"> -Pn (No Ping - Evade FW)</label>
+            <label><input type="checkbox" class="flag" value="-T4"> -T4 (Timing - Faster)</label>
+            <label><input type="checkbox" class="flag" value="-sn"> -sn (Ping Sweep - Solo descubrir)</label>
+        </div>
+        
+        <!-- Panel 4: Análisis Intermedio -->
+        <div class="control-group">
+            <h3>4. Análisis Red (Intermedio)</h3>
+            <label><input type="checkbox" class="flag" value="--reason"> --reason (Motivo del estado)</label>
+            <label><input type="checkbox" class="flag" value="--packet-trace"> --packet-trace (Ver Tráfico)</label>
+            <label><input type="checkbox" class="flag" value="--script vuln"> --script vuln (Motor NSE)</label>
+            <label><input type="checkbox" class="flag" value="-oA logs/reporte"> -oA (Guardar Evidencia)</label>
+        </div>
+    </div>
+
+    <button class="btn-scan" onclick="runScan()">EJECUTAR ESCANEO</button>
+
+    <div class="terminal-header">
+        <span>kali@linux:~$</span>
+        <span>bash</span>
+    </div>
+    <div id="console">Esperando ordenes...</div>
+
+    <div style="margin-top: 20px;">
+        <div class="analysis-box">
+            <span class="analysis-title">Análisis para Estudiantes:</span>
+            <span id="analysis-text">Ejecute un escaneo para generar el análisis técnico.</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function runScan() {
+        const consoleElem = document.getElementById('console');
+        const target = document.getElementById('target').value;
+        const analysisText = document.getElementById('analysis-text');
+        
+        let flagsArray = Array.from(document.querySelectorAll('.flag:checked')).map(f => f.value);
+        let flags = flagsArray.join(' ');
+        let targetIP = target === 'metasploitable' ? '192.168.1.101' : '192.168.1.200';
+        
+        // Logical states
+        let hasPn = flags.includes('-Pn');
+        let hasSV = flags.includes('-sV') || flags.includes('-A');
+        let hasO = flags.includes('-O') || flags.includes('-A');
+        let hasReason = flags.includes('--reason');
+        let hasVuln = flags.includes('--script vuln');
+        let hasTrace = flags.includes('--packet-trace');
+        let hasSn = flags.includes('-sn');
+        let isTopPorts = flags.includes('--top-ports');
+        
+        consoleElem.innerHTML = `<span class="cmd">kali@linux:~$ nmap ${flags} ${targetIP}</span>\n`;
+        consoleElem.innerHTML += `Starting Nmap 7.94 ( https://nmap.org ) at ${new Date().toLocaleTimeString()}\n`;
+        
+        let out = "";
+        let analysis = "";
+
+        setTimeout(() => {
+            // Packet trace logic
+            if (hasTrace) {
+                out += `<span class="trace">SENT (0.0120s) TCP 192.168.1.10:54321 > ${targetIP}:80 S ttl=55 id=12345\n`;
+                out += `RCVD (0.0145s) TCP ${targetIP}:80 > 192.168.1.10:54321 SA ttl=64 id=0</span>\n`;
+            }
+
+            // Firewall logic (Windows without -Pn)
+            if (target === 'windows' && !hasPn && !hasSn) {
+                out += `Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn\n`;
+                out += `Nmap done: 1 IP address (0 hosts up) scanned in 3.05 seconds.\n`;
+                analysis = "<strong><span class='info'>Bloqueo por Firewall:</span></strong> El host Windows parece inactivo. Esto ocurre porque Nmap envía paquetes ICMP (Ping) por defecto para ver si el equipo está vivo. Windows Defender bloquea esto. <br><strong>Acción requerida:</strong> Indique a los alumnos que marquen la opción <code>-Pn</code> en el panel de Agresividad para omitir el ping y forzar el escaneo.";
+            } 
+            // Ping Sweep logic
+            else if (hasSn) {
+                out += `Host is up (0.0003s latency).\n`;
+                out += `MAC Address: 08:00:27:A5:B1:C2 (Oracle VirtualBox)\n`;
+                out += `Nmap done: 1 IP address (1 host up) scanned in 0.10 seconds.\n`;
+                analysis = "<strong>Ping Sweep detectado (<code>-sn</code>):</strong> Nmap solo ha confirmado que el objetivo está encendido. No se han escaneado puertos. Esta técnica es vital en la fase inicial de reconocimiento para mapear la red rápidamente sin alertar a los sistemas de detección de intrusos (IDS).";
+            }
+            // Normal Scan Logic
+            else {
+                out += `Host is up (0.00${Math.floor(Math.random() * 5 + 1)}s latency).\n`;
+                if (!isTopPorts) {
+                    out += `Not shown: 995 closed tcp ports (reset)\n`;
+                }
+                
+                let header = `PORT     STATE SERVICE`;
+                if (hasReason) header += ` REASON`;
+                if (hasSV) header += ` VERSION`;
+                out += `${header}\n`;
+
+                let reasonStrOpen = hasReason ? ` <span class="reason-col">syn-ack ttl 64</span>` : "";
+                let reasonStrFiltered = hasReason ? ` <span class="reason-col">no-response</span>` : "";
+
+                if (target === 'metasploitable') {
+                    out += `21/tcp   open  ftp    ${reasonStrOpen}${hasSV ? '  vsftpd 2.3.4' : ''}\n`;
+                    if (hasVuln) out += `| <span class="vuln">ftp-vsftpd-backdoor: VULNERABLE</span>\n`;
+                    
+                    out += `22/tcp   open  ssh    ${reasonStrOpen}${hasSV ? '  OpenSSH 4.7p1' : ''}\n`;
+                    out += `80/tcp   open  http   ${reasonStrOpen}${hasSV ? '  Apache httpd 2.2.8' : ''}\n`;
+                    out += `445/tcp  open  netbios-ssn${reasonStrOpen}${hasSV ? ' Samba smbd 3.X' : ''}\n`;
+                    if (hasVuln) out += `| <span class="vuln">smb-vuln-ms08-067: VULNERABLE</span>\n`;
+                    
+                    if (hasO) out += `\nOS details: Linux 2.6.9 - 2.6.33 (Metasploitable 2)\n`;
+                    
+                    analysis = "<strong>Análisis de Metasploitable 2:</strong> Objetivo vulnerable expuesto. ";
+                    if (hasSV) analysis += "Al usar <code>-sV</code>, identificamos versiones críticas como vsftpd 2.3.4. ";
+                    if (hasVuln) analysis += "<br><br>Al activar el motor NSE (<code>--script vuln</code>), Nmap actuó como un escáner de vulnerabilidades descubriendo el backdoor de FTP y la vulnerabilidad MS08-067, listos para ser atacados en Metasploit.";
+                    if (hasReason) analysis += "<br><br>La columna <strong>REASON</strong> (<code>--reason</code>) explica a nivel TCP por qué el puerto se considera abierto (recibió un paquete SYN-ACK).";
+                    
+                } else {
+                    out += `135/tcp  open     msrpc       ${reasonStrOpen}${hasSV ? ' Microsoft Windows RPC' : ''}\n`;
+                    out += `445/tcp  open     microsoft-ds${reasonStrOpen}${hasSV ? ' Windows 11 Pro' : ''}\n`;
+                    out += `3389/tcp filtered ms-wbt-server${reasonStrFiltered}${hasSV ? ' RDP' : ''}\n`;
+                    
+                    if (hasO) out += `\nOS details: Microsoft Windows 10/11 1809 - 22H2\n`;
+                    
+                    analysis = "<strong>Análisis de Windows 11:</strong> Escaneo exitoso evadiendo el Firewall mediante <code>-Pn</code>. <br><br>Los puertos 135 y 445 están abiertos, exponiendo servicios internos de Windows (SMB/RPC). El puerto 3389 (RDP) se muestra como ";
+                    analysis += hasReason ? "<strong>filtrado</strong> porque no hubo respuesta (<code>no-response</code>), indicando que un firewall perimetral está bloqueando ese puerto específico." : "<strong>filtrado</strong>.";
+                }
+
+                if (flags.includes('-oA logs/reporte')) {
+                    out += `\n<span class="info">[*] Results saved in: logs/reporte.nmap, logs/reporte.xml, logs/reporte.gnmap</span>\n`;
+                    analysis += "<br><br><strong>Evidencia:</strong> Se han guardado los resultados (<code>-oA</code>). El archivo XML es indispensable para automatizar reportes y poblar la base de datos de Metasploit (db_import).";
+                }
+
+                out += `\nNmap done: 1 IP address (1 host up) scanned in ${(Math.random() * 2 + 1).toFixed(2)} seconds.\n`;
+            }
+
+            consoleElem.innerHTML += out;
+            analysisText.innerHTML = analysis;
+            
+        }, 800);
+    }
+</script>
+</body>
+</html>

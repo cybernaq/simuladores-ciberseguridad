@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Virtual: Shodan OSINT</title>
+    <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=XbHyOzru37TVkB2aVZHN6UMvxdtm1trWKF0a8O_Tb2j9NrmsV9pga70lpnybXkS-q0b9NOzFZlI-ztLJO0oZP5gQpqBl2f5zpc4SE2_mP5we7-sfgJqdVY8kBcSxaTpvj86tR1tsgnylyRiX8PWDDCGsah-_eBDH_Fd4b9EP82TPvmZMxt0DMTWHJbv9h1o4av8ErVSa7VD0h1hdO9ssvz9dpyQ_T0wonX-XzcuN0S3eAd6UEB0wxfRxmRB5sRpmlSVZbGCKKc9lrjGQm64QmATEgsMfiRNKcKHbBBhtlbeGM01v2iwPNjgS4MLo0RSqtjKB71hsIW0r71GCGVPJ9Q" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jb250cmlidXRpb24udXNlcmNvbnRlbnQuZ29vZ2xlLmNvbS9kb3dubG9hZD9jPUNneGlZWEprWDNOMGIzSmhaMlVTVUJJTmNtVnpjRzl1YzJWZlpHRjBZUm9fQ2pCaU5Ea3lNVGcwTnpKa05UWXdNR0UzTURBd05qVXdNemRrTmpFeE1HSmhZakEwWWpnMVl6QXhNbU13WmpkaE5UTVNDeElIRU9YZDg5N2tGeGdCJmZpbGVuYW1lPVNpbXVsYWRvcl9TaG9kYW5fT1NJTlQuaHRtbCZvcGk9MTAzMTM1MDUw"/><style>
+        :root {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --terminal-bg: #000000;
+            --text-primary: #f3f4f6;
+            --accent: #ef4444; /* Shodan Red */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border-color: #374151;
+            --link-color: #60a5fa;
+            --shodan-orange: #f97316;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-primary); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 1200px; width: 100%; background: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border-top: 4px solid var(--accent); }
+        h1 { color: var(--text-primary); margin-top: 0; font-size: 1.6rem; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        h1 span { color: var(--accent); font-weight: bold; }
+        
+        .panel-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .control-group { background: rgba(17, 24, 39, 0.6); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .control-group h3 { font-size: 0.9rem; margin: 0 0 12px 0; color: var(--shodan-orange); text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        
+        label { display: flex; align-items: center; font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; color: #d1d5db; transition: color 0.2s; }
+        label:hover { color: #ffffff; }
+        input[type="checkbox"] { margin-right: 8px; accent-color: var(--accent); }
+        select { width: 100%; padding: 8px; background: #111827; color: white; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem; }
+        
+        .terminal-header { background: #374151; padding: 6px 15px; border-radius: 8px 8px 0 0; font-family: monospace; font-size: 0.8rem; display: flex; justify-content: space-between; color: #d1d5db; border-top: 2px solid var(--accent); }
+        #console { background: var(--terminal-bg); color: #e5e7eb; padding: 15px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9rem; height: 350px; overflow-y: auto; border-radius: 0 0 8px 8px; white-space: pre-wrap; border: 1px solid var(--border-color); line-height: 1.5; }
+        
+        .btn-scan { width: 100%; padding: 14px; margin: 10px 0 20px 0; background: var(--accent); border: none; border-radius: 6px; color: #ffffff; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-scan:hover { background: #dc2626; }
+        
+        .analysis-box { background: rgba(239, 68, 68, 0.05); border-left: 4px solid var(--shodan-orange); padding: 15px; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; color: #e5e7eb; }
+        .analysis-title { color: var(--shodan-orange); font-weight: bold; margin-bottom: 8px; display: block; font-size: 1.1rem; }
+        
+        .cmd { color: var(--success); font-weight: bold; }
+        .shodan-query { color: var(--shodan-orange); font-weight: bold; }
+        .ip { color: var(--link-color); font-weight: bold; }
+        .port { color: var(--warning); }
+        .vuln { color: var(--danger); font-weight: bold; border: 1px solid var(--danger); padding: 0 3px; border-radius: 3px; font-size: 0.8em; }
+        .meta { color: #6b7280; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>👁️ Laboratorio OSINT: <span>SHODAN</span> Search Engine</h1>
+    
+    <div class="panel-controls">
+        <div class="control-group">
+            <h3>1. Geofencing y Red (Filtros Globales)</h3>
+            <select id="target">
+                <option value="country:&quot;PE&quot;">country:"PE" (Perú)</option>
+                <option value="city:&quot;Lima&quot;">city:"Lima" (Solo Lima)</option>
+                <option value="org:&quot;AWS&quot;">org:"Amazon.com" (Infraestructura Cloud)</option>
+                <option value="">[Búsqueda Global en Internet]</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <h3>2. Nivel Básico (Reconocimiento Servicios)</h3>
+            <label><input type="checkbox" class="flag" value="port:21"> port:21 (Servidores FTP)</label>
+            <label><input type="checkbox" class="flag" value="port:3389"> port:3389 (Escritorio Remoto RDP)</label>
+            <label><input type="checkbox" class="flag" value="os:&quot;Windows&quot;"> os:"Windows" (Sistema Operativo)</label>
+            <label><input type="checkbox" class="flag" value="product:&quot;Apache httpd&quot;"> product:"Apache httpd" (Software Web)</label>
+            <label><input type="checkbox" class="flag" value="title:&quot;camera&quot;"> title:"camera" (Cámaras IP genéricas)</label>
+            <label><input type="checkbox" class="flag" value="title:&quot;RouterOS&quot;"> title:"RouterOS" (Equipos MikroTik)</label>
+            <label><input type="checkbox" class="flag" value="port:22 &quot;OpenSSH&quot;"> port:22 "OpenSSH" (Banners específicos)</label>
+            <label><input type="checkbox" class="flag" value="net:&quot;190.0.0.0/8&quot;"> net:"190.0.0.0/8" (Bloques de IPs/ASN)</label>
+        </div>
+
+        <div class="control-group">
+            <h3>3. Nivel Intermedio (Vulnerabilidades e ICS)</h3>
+            <label><input type="checkbox" class="flag" value="vuln:cve-2017-0144"> vuln:cve-2017-0144 (EternalBlue - Requiere API)</label>
+            <label><input type="checkbox" class="flag" value="port:502"> port:502 (Modbus - SCADA/Infraestructura)</label>
+            <label><input type="checkbox" class="flag" value="has_screenshot:true"> has_screenshot:true (Imágenes RDP/VNC expuestas)</label>
+            <label><input type="checkbox" class="flag" value="ssl.cert.expired:true"> ssl.cert.expired:true (Certificados Caducados)</label>
+            <label><input type="checkbox" class="flag" value="port:9200 &quot;Elasticsearch&quot;"> port:9200 "Elasticsearch" (Bases de datos)</label>
+            <label><input type="checkbox" class="flag" value="&quot;Authentication: disabled&quot;"> "Authentication: disabled" (Falta de acceso)</label>
+            <label><input type="checkbox" class="flag" value="&quot;default password&quot;"> "default password" (Credenciales de fábrica)</label>
+            <label><input type="checkbox" class="flag" value="http.title:&quot;Kibana&quot;"> http.title:"Kibana" (Paneles de visualización)</label>
+        </div>
+    </div>
+
+    <button class="btn-scan" onclick="runShodan()">🌐 EJECUTAR BÚSQUEDA SHODAN-CLI</button>
+
+    <div class="terminal-header">
+        <span>osint@kali:~/shodan$</span>
+        <span>shodan-cli v1.31.0</span>
+    </div>
+    <div id="console">Utilice la interfaz superior para construir su Dork de Shodan...</div>
+
+    <div style="margin-top: 20px;">
+        <div class="analysis-box">
+            <span class="analysis-title">Análisis de Inteligencia de Amenazas (CTI):</span>
+            <span id="analysis-text">Esperando consulta para generar reporte de exposición.</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function runShodan() {
+        const consoleElem = document.getElementById('console');
+        const targetRaw = document.getElementById('target').value;
+        const analysisText = document.getElementById('analysis-text');
+        
+        let flagsArray = Array.from(document.querySelectorAll('.flag:checked')).map(f => f.value);
+        
+        let targetPart = targetRaw ? `${targetRaw}` : '';
+        let queryArray = [];
+        if(targetPart) queryArray.push(targetPart);
+        if(flagsArray.length > 0) queryArray = queryArray.concat(flagsArray);
+        
+        let fullQuery = queryArray.join(' ').trim();
+        
+        if (fullQuery === '') {
+            alert("Por favor, seleccione al menos un filtro de búsqueda.");
+            return;
+        }
+
+        consoleElem.innerHTML = `<span class="cmd">osint@kali:~$ shodan search "${fullQuery}" --fields ip_str,port,org,hostnames</span>
+`;
+        consoleElem.innerHTML += `<span class="meta">[*] Contactando API REST de Shodan (api.shodan.io)...
+[*] Obteniendo banners de respuesta...
+</span>
+`;
+        
+        let out = `Query: <span class="shodan-query">${fullQuery}</span>
+
+`;
+        let analysis = "";
+
+        setTimeout(() => {
+            // Logic validation
+            let hasVuln = fullQuery.includes('vuln:');
+            let hasScada = fullQuery.includes('port:502');
+            let hasScreenshot = fullQuery.includes('has_screenshot');
+            let hasRDP = fullQuery.includes('port:3389');
+            let hasElastic = fullQuery.includes('9200');
+            let hasAuthDisabled = fullQuery.includes('disabled') || fullQuery.includes('default password');
+            
+            // Check for over-filtering (Shodan AND logic)
+            if (flagsArray.length > 3) {
+                out += `Resultados encontrados: 0
+
+`;
+                out += `<span class="danger">[-] Aviso:</span> La búsqueda es demasiado restrictiva.
+`;
+                analysis = `<strong>⚠️ Lección sobre el motor de Shodan:</strong> Shodan utiliza lógica <code>AND</code> (Y) por defecto de manera estricta en el mismo banner. Si buscas <code>port:21</code> Y <code>port:3389</code> al mismo tiempo, le estás pidiendo a Shodan que encuentre un servidor que haya devuelto ambos servicios en el <strong>mismo fragmento de texto del banner</strong>, lo cual rara vez ocurre en una búsqueda CLI simple. Los alumnos deben usar filtros individuales o el operador coma en algunos contextos.`;
+            } 
+            else if (hasVuln) {
+                out += `<span class="danger">HTTP 403 Forbidden: Access Denied.</span>
+`;
+                out += `Error: The 'vuln' filter requires an Academic or Small Business API subscription.
+`;
+                analysis = `<strong>💳 Limitación Comercial de Shodan:</strong> El filtro <code>vuln:</code> (para buscar CVEs específicos como EternalBlue) es una característica "Premium". En un entorno universitario, los estudiantes pueden solicitar el "Academic Upgrade" usando el correo institucional (<code>@edu.pe</code>) para desbloquear este filtro de manera gratuita en sus cuentas personales.`;
+            }
+            else {
+                let results = Math.floor(Math.random() * 5000) + 100;
+                out += `Resultados aproximados: ${results.toLocaleString()}
+
+`;
+                
+                // IP Generator
+                const rIP = () => `${Math.floor(Math.random()*254)+1}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*254)+1}`;
+                
+                if (hasScada) {
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">502/tcp</span>	Telefónica del Perú	[Planta de Tratamiento Aguas]
+`;
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">502/tcp</span>	Energía y Luz SA	[Controlador PLC Siemens]
+`;
+                    analysis = `<strong>⚡ Riesgo de Infraestructura Crítica (SCADA/ICS):</strong> El puerto 502 pertenece al protocolo Modbus. Encontrar esto expuesto en internet es gravísimo. Permite a los atacantes interactuar con sensores industriales, válvulas de agua o redes eléctricas. <strong>Mitigación:</strong> Los sistemas de Control Industrial (ICS) jamás deben tener salida directa a internet. Deben aislarse detrás de firewalls restrictivos y VPNs.`;
+                } 
+                else if (hasScreenshot || hasRDP) {
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">3389/tcp</span>	Amazon.com Services LLC	<span class="vuln">[VNC/RDP Screenshot Available]</span>
+`;
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">3389/tcp</span>	DigitalOcean, LLC	Windows Server 2019
+`;
+                    analysis = `<strong>🖼️ Exposición Visual y Escritorio Remoto:</strong> Buscar puertos RDP (3389) o VNC con el filtro <code>has_screenshot:true</code> permite ver literalmente los escritorios de los servidores ajenos. A menudo se exponen servidores de contabilidad o cajas registradoras. Son el principal vector para ataques de <strong>Ransomware</strong> vía fuerza bruta a contraseñas débiles.`;
+                }
+                else if (hasElastic) {
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">9200/tcp</span>	Hetzner Online	Cluster: "produccion-logs"
+`;
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">9200/tcp</span>	Google Cloud	Status: 200 OK (No Auth)
+`;
+                    analysis = `<strong>🗄️ Fuga Masiva de Datos:</strong> El puerto 9200 expone bases de datos Elasticsearch. Si no se configura seguridad adicional, cualquier persona en internet puede leer terabytes de datos corporativos (logs, usuarios, transacciones) simplemente haciendo una petición HTTP.`;
+                }
+                else if (hasAuthDisabled) {
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">80/tcp</span>	ISP Local	<span class="vuln">Authentication: disabled</span>
+`;
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">23/tcp</span>	Universidad Beta	Banner: "Login: admin, Password: password"
+`;
+                    analysis = `<strong>🔓 Falta de Control de Acceso:</strong> Shodan lee el texto de bienvenida (banner) de los servicios. Si un router o servicio web responde explícitamente que la autenticación está desactivada o muestra contraseñas por defecto, Shodan lo indexa. Esto facilita el ataque inicial a actores maliciosos.`;
+                }
+                else {
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">80/tcp</span>	Hosting Proveedor	Apache/2.4.41 (Ubuntu)
+`;
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">443/tcp</span>	Cloudflare Inc.	nginx/1.18.0
+`;
+                    out += `<span class="ip">${rIP()}</span>	<span class="port">21/tcp</span>	Telecom Argentina	vsftpd 3.0.3
+`;
+                    analysis = `<strong>📊 Reconocimiento Básico y Fingerprinting:</strong> La consulta devolvió banners de servicios estándar. En un pentesting real, los alumnos usarían esta información para determinar el "stack tecnológico" (Sistema Operativo, versión de Apache/Nginx, tipo de FTP) del objetivo antes de buscar un exploit en bases de datos como Exploit-DB, todo esto sin enviar ni un solo paquete al objetivo real.`;
+                }
+            }
+
+            out += `
+<span class="meta">[*] Finalizado. (Nota: Para descargar el JSON completo use 'shodan download')</span>`;
+            consoleElem.innerHTML += out;
+            analysisText.innerHTML = analysis;
+            
+        }, 1300); // Simulando retraso de red de la API
+    }
+</script>
+</body>
+</html>

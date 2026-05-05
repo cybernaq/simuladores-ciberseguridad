@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Virtual OSINT: Google Dorks</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --terminal-bg: #000000;
+            --text-primary: #f8fafc;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+            --border-color: #334155;
+            --link-color: #3b82f6;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-primary); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 1200px; width: 100%; background: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: var(--accent); margin-top: 0; font-size: 1.6rem; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        
+        .panel-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .control-group { background: rgba(15, 23, 42, 0.4); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .control-group h3 { font-size: 0.9rem; margin: 0 0 12px 0; color: var(--accent); text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        
+        label { display: flex; align-items: center; font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; color: #cbd5e1; transition: color 0.2s; }
+        label:hover { color: var(--text-primary); }
+        input[type="checkbox"] { margin-right: 8px; accent-color: var(--accent); }
+        select { width: 100%; padding: 8px; background: #0f172a; color: white; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.9rem; }
+        
+        .terminal-header { background: #334155; padding: 6px 15px; border-radius: 8px 8px 0 0; font-family: monospace; font-size: 0.8rem; display: flex; justify-content: space-between; color: #cbd5e1; }
+        #console { background: var(--terminal-bg); color: #d1d5db; padding: 15px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9rem; height: 350px; overflow-y: auto; border-radius: 0 0 8px 8px; white-space: pre-wrap; border: 1px solid var(--border-color); line-height: 1.5; }
+        
+        .btn-scan { width: 100%; padding: 14px; margin: 10px 0 20px 0; background: var(--accent); border: none; border-radius: 6px; color: #0f172a; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-scan:hover { background: #fbbf24; }
+        
+        .analysis-box { background: rgba(15, 23, 42, 0.6); border-left: 4px solid var(--accent); padding: 15px; border-radius: 4px; font-size: 0.95rem; line-height: 1.6; color: #e2e8f0; }
+        .analysis-title { color: var(--accent); font-weight: bold; margin-bottom: 8px; display: block; font-size: 1.1rem; }
+        
+        .cmd { color: var(--success); font-weight: bold; }
+        .dork-string { color: var(--warning); font-weight: bold; }
+        .url { color: var(--link-color); text-decoration: underline; }
+        .danger { color: var(--danger); font-weight: bold; }
+        .meta { color: #6b7280; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🕷️ Laboratorio OSINT: Google Hacking Database (GHDB)</h1>
+    
+    <div class="panel-controls">
+        <div class="control-group">
+            <h3>1. Dominio Objetivo (site:)</h3>
+            <select id="target">
+                <option value="gob.pe">gob.pe (Entidades Gubernamentales)</option>
+                <option value="edu.pe">edu.pe (Universidades / Académico)</option>
+                <option value="empresa-lab.com">empresa-lab.com (Entorno Privado)</option>
+                <option value="">[Búsqueda Global]</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <h3>2. Nivel Básico (Operadores)</h3>
+            <label><input type="checkbox" class="flag" value="filetype:pdf"> filetype:pdf (Documentos)</label>
+            <label><input type="checkbox" class="flag" value="filetype:xlsx"> filetype:xlsx (Hojas de cálculo)</label>
+            <label><input type="checkbox" class="flag" value="intext:&quot;confidencial&quot;"> intext:"confidencial"</label>
+            <label><input type="checkbox" class="flag" value="intext:&quot;password&quot;"> intext:"password"</label>
+            <label><input type="checkbox" class="flag" value="inurl:&quot;/admin&quot;"> inurl:"/admin"</label>
+            <label><input type="checkbox" class="flag" value="inurl:&quot;/login&quot;"> inurl:"/login"</label>
+            <label><input type="checkbox" class="flag" value="intitle:&quot;index of&quot;"> intitle:"index of"</label>
+            <label><input type="checkbox" class="flag" value="intitle:&quot;dashboard&quot;"> intitle:"dashboard"</label>
+        </div>
+
+        <div class="control-group">
+            <h3>3. Nivel Intermedio (Patrones GHDB)</h3>
+            <label><input type="checkbox" class="flag" value="ext:log &quot;software error&quot;"> ext:log "software error"</label>
+            <label><input type="checkbox" class="flag" value="ext:sql &quot;insert into&quot;"> ext:sql "insert into"</label>
+            <label><input type="checkbox" class="flag" value="ext:env &quot;DB_PASSWORD&quot;"> ext:env "DB_PASSWORD"</label>
+            <label><input type="checkbox" class="flag" value="intitle:&quot;phpMyAdmin&quot;"> intitle:"phpMyAdmin"</label>
+            <label><input type="checkbox" class="flag" value="inurl:&quot;wp-content/uploads&quot;"> inurl:"wp-content/uploads"</label>
+            <label><input type="checkbox" class="flag" value="(ext:bak OR ext:old OR ext:bkp)"> (ext:bak OR ext:old OR ext:bkp)</label>
+            <label><input type="checkbox" class="flag" value="intitle:&quot;webcamXP 5&quot;"> intitle:"webcamXP 5"</label>
+            <label><input type="checkbox" class="flag" value="intext:&quot;BEGIN OPENSSH PRIVATE KEY&quot;"> intext:"BEGIN OPENSSH KEY"</label>
+        </div>
+    </div>
+
+    <button class="btn-scan" onclick="runOSINT()">🔍 EJECUTAR BÚSQUEDA OSINT</button>
+
+    <div class="terminal-header">
+        <span>osint@kali:~/reconocimiento$</span>
+        <span>ghdb-scraper.py v1.2</span>
+    </div>
+    <div id="console">Seleccione sus operadores (Dorks) y ejecute la búsqueda...</div>
+
+    <div style="margin-top: 20px;">
+        <div class="analysis-box">
+            <span class="analysis-title">Análisis Pedagógico (Fase de Reconocimiento):</span>
+            <span id="analysis-text">Esperando ejecución del Dork para emitir reporte de inteligencia.</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function runOSINT() {
+        const consoleElem = document.getElementById('console');
+        const targetRaw = document.getElementById('target').value;
+        const analysisText = document.getElementById('analysis-text');
+        
+        let flagsArray = Array.from(document.querySelectorAll('.flag:checked')).map(f => f.value);
+        
+        let targetPart = targetRaw ? `site:${targetRaw}` : '';
+        let fullDork = `${targetPart} ${flagsArray.join(' ')}`.trim();
+        let domainDisplay = targetRaw || "Global (Internet)";
+        
+        if (fullDork === '') {
+            alert("Por favor, seleccione al menos un operador o un dominio.");
+            return;
+        }
+
+        consoleElem.innerHTML = `<span class="cmd">osint@kali:~$ python3 ghdb-scraper.py --query '${fullDork}'</span>\n`;
+        consoleElem.innerHTML += `<span class="meta">[*] Inicializando motor de búsqueda OSINT...\n[*] Evadiendo CAPTCHAs...\n[*] Consultando índice público...\n</span>\n`;
+        
+        let out = `Construyendo Dork: <span class="dork-string">${fullDork}</span>\n\n`;
+        let analysis = "";
+
+        setTimeout(() => {
+            let hasPDF = fullDork.includes('filetype:pdf');
+            let hasExcel = fullDork.includes('filetype:xlsx');
+            let hasSQL = fullDork.includes('ext:sql');
+            let hasEnv = fullDork.includes('ext:env');
+            let hasLog = fullDork.includes('ext:log');
+
+            let formatCount = [hasPDF, hasExcel, hasSQL, hasEnv, hasLog].filter(Boolean).length;
+
+            if (formatCount > 1 || flagsArray.length > 3) {
+                out += `Resultados encontrados: 0\n\n`;
+                out += `<span class="danger">[-] Error Lógico:</span> La consulta es demasiado restrictiva o contradictoria.\n`;
+                // Usando backticks ` ` para evitar choques con las comillas dobles del HTML
+                analysis = `<strong>⚠️ Lección de Construcción de Dorks:</strong> Has combinado demasiados parámetros o formatos de archivo incompatibles. En OSINT, menos es más. Recomienda usar el operador <code>OR</code> si buscan múltiples extensiones.`;
+            } 
+            else if (flagsArray.length === 0) {
+                out += `Resultados encontrados: Aproximadamente 4,520,000\n`;
+                out += `[+] Mostrando estructura general del dominio ${domainDisplay}\n`;
+                analysis = `Búsqueda demasiado amplia. Solo usar <code>site:</code> devuelve todas las páginas indexadas del dominio. Útil para mapeo inicial.`;
+            }
+            else {
+                let results = Math.floor(Math.random() * 15) + 1;
+                out += `Resultados encontrados: ${results}\n\n`;
+                
+                let mockDomain = targetRaw || "target-vulnerable.com";
+                let tld = targetRaw ? "" : (Math.random() > 0.5 ? ".org" : ".net");
+                
+                if (fullDork.includes("index of")) {
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/respaldos/</span> - Index of /respaldos\n`;
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/intranet/docs/</span> - Index of /intranet/docs\n`;
+                    analysis = `<strong>🔴 Directory Listing (CWE-548):</strong> El operador <code>intitle:"index of"</code> revela directorios web mal configurados. <strong>Mitigación:</strong> Deshabilitar 'Options Indexes' en el servidor web.`;
+                } 
+                else if (fullDork.includes("OPENSSH")) {
+                    out += `[+] <span class="url">https://git.${mockDomain}${tld}/dev/config/id_rsa</span> - <span class="danger">[PRIVATE KEY LEAK]</span>\n`;
+                    analysis = `<strong>🔥 Fuga Crítica (CWE-798):</strong> Claves privadas SSH expuestas. Permite acceso directo a la infraestructura. <strong>Impacto:</strong> Compromiso total del servidor.`;
+                }
+                else if (hasEnv || fullDork.includes("DB_PASSWORD")) {
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/.env</span> - APP_DEBUG=true DB_PASSWORD=*******\n`;
+                    analysis = `<strong>🔥 Fuga de Archivo de Entorno:</strong> Archivos <code>.env</code> contienen credenciales críticas. Nunca deben estar en la carpeta pública raíz.`;
+                }
+                else if (hasSQL) {
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/backup_2025.sql</span>\n`;
+                    analysis = `<strong>🔴 Fuga de Base de Datos:</strong> Volcado SQL encontrado. Los atacantes buscan esto para obtener bases de datos completas.`;
+                }
+                else if (fullDork.includes("webcamXP")) {
+                    out += `[+] <span class="url">http://cam1.${mockDomain}${tld}:8080/</span> - webcamXP Live Feed\n`;
+                    analysis = `<strong>🟠 Exposición de IoT:</strong> Dispositivos como cámaras IP a menudo se conectan sin autenticación.`;
+                }
+                else if (hasPDF || hasExcel) {
+                    let ext = hasPDF ? "pdf" : "xlsx";
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/docs/presupuesto_2026.${ext}</span>\n`;
+                    analysis = `<strong>🟡 Fuga de Información Sensible:</strong> Documentos indexados sin protección. <strong>Mitigación:</strong> robots.txt y autenticación.`;
+                }
+                else if (fullDork.includes("wp-content") || fullDork.includes("admin")) {
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/wp-admin/</span> - Login Panel\n`;
+                    analysis = `<strong>🟡 Reconocimiento de CMS:</strong> Identificar paneles de admin permite lanzar ataques de fuerza bruta.`;
+                }
+                else {
+                    out += `[+] <span class="url">https://${mockDomain}${tld}/resultado1.html</span>\n`;
+                    analysis = `<strong>🟢 Reconocimiento General:</strong> Consulta OSINT válida para entender la superficie pública.`;
+                }
+            }
+
+            out += `\n<span class="meta">[*] Búsqueda finalizada.</span>`;
+            consoleElem.innerHTML += out;
+            analysisText.innerHTML = analysis;
+            
+        }, 1200);
+    }
+</script>
+</body>
+</html>
