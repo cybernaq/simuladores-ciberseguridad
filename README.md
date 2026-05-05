@@ -12,7 +12,7 @@ Si eres estudiante o simplemente quieres **utilizar** las herramientas, no neces
 
 ---
 
-## 🤝 Guía para Contribuir (Para Desarrolladores)
+## 🤝 Guía para interesados en Contribuir
 
 Este es un proyecto de código abierto y la comunidad es bienvenida a proponer mejoras, optimizar la lógica de las simulaciones o crear nuevos módulos. 
 
